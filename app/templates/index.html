@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TDS Monitoring</title>
+    <script>
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("tdsValue").innerText = data.tdsValue;
+                    document.getElementById("temperature").innerText = data.temperature;
+                    document.getElementById("ecValue").innerText = data.ecValue;
+                });
+        }
+
+        function calibrate() {
+            const value = prompt("Enter known EC value (µS/cm):");
+            fetch('/calibrate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ calibration_value: parseFloat(value) })
+            }).then(response => response.json())
+              .then(data => alert(data.message));
+        }
+
+        setInterval(fetchData, 5000);
+    </script>
+</head>
+<body onload="fetchData()">
+    <h1>TDS Monitoring</h1>
+    <p>TDS Value: <span id="tdsValue">-</span></p>
+    <p>Temperature: <span id="temperature">-</span></p>
+    <p>EC Value: <span id="ecValue">-</span></p>
+    <button onclick="calibrate()">Calibrate</button>
+</body>
+</html>
